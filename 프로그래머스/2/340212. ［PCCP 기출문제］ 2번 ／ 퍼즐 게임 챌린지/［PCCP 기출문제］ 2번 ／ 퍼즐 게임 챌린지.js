@@ -1,10 +1,10 @@
 function solution(diffs, times, limit) {
     const binarySearch = (start,end, checkFind) => {
         if(start > end) return start;
-        const target = Math.floor((start + end)/2)
-        if(checkFind(target) === 1) return target;
-        else if(checkFind(target) === -1) return binarySearch(target+1, end, checkFind);
-        else return binarySearch(start,target-1, checkFind)
+        const middle = Math.floor((start + end)/2)
+        if(checkFind(middle) === 1) return middle;
+        else if(checkFind(middle) === -1) return binarySearch(middle+1, end, checkFind);
+        else return binarySearch(start,middle-1, checkFind)
     }
     
     const calculateTimeUsage = (diff, level, prevTime, currentTime) => {
@@ -21,8 +21,8 @@ function solution(diffs, times, limit) {
         const timeUsageOfPrevLevel = calculateTotalTimeUsage(diffs, times, level - 1);
         const timeUsageOfCurrentLevel = calculateTotalTimeUsage(diffs, times, level);
         
-        if(timeUsageOfCurrentLevel > limit) return -1; // 왼쪽 이진 탐색
-        if(timeUsageOfPrevLevel <= limit) return -2; // 오른쪽 이진 탐색 
+        if(timeUsageOfCurrentLevel > limit) return -1; // 오른쪽 이진 탐색
+        if(timeUsageOfPrevLevel <= limit) return -2; // 왼쪽 이진 탐색 
         if(timeUsageOfPrevLevel > limit && timeUsageOfCurrentLevel<=limit) return 1; // 발견
     }
     
