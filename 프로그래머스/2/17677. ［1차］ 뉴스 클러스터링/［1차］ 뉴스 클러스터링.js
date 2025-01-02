@@ -1,38 +1,19 @@
 function solution(str1, str2) {
     const isValid = (str) => /^[a-zA-Z]{2}$/.test(str);
 
-    const makeIntersectionSet = (set1, set2) => {
-        const map = new Map();
-        const intersection = [];
-
-        for (const element of set1) {
-            map.set(element, (map.get(element) || 0) + 1);
-        }
-
-        for (const element of set2) {
-            if (map.get(element) > 0) {
-                intersection.push(element);
-                map.set(element, map.get(element) - 1); 
-            }
-        }
-
-        return intersection;
-};
-
-
-    const makeUnionSet = (set1, set2) => {
-        const union = [];
+    const makeSetSize = (set1, set2) => {
         const elements = new Set([...set1, ...set2]);
+        let unionSize = 0;
+        let intersectionSize = 0;
         
-        for (const element of elements) {
+        elements.forEach((element) => {
             const count1 = set1.filter((el) => el === element).length;
             const count2 = set2.filter((el) => el === element).length;
-
-            for (let i = 0; i < Math.max(count1, count2); i++) {
-                union.push(element);
-            }          
-        }
-        return union;
+            unionSize += Math.max(count1, count2)
+            intersectionSize += Math.min(count1, count2)
+        })
+        
+        return [unionSize, intersectionSize]
     };
 
     const makeMultipleSet = (str) => {
@@ -46,9 +27,9 @@ function solution(str1, str2) {
 
     const multipleSet1 = makeMultipleSet(str1);
     const multipleSet2 = makeMultipleSet(str2);
+    
+    const [unionSetSize, intersectionSize ] = makeSetSize(multipleSet1,multipleSet2)
 
-    const intersectionSize = makeIntersectionSet(multipleSet1, multipleSet2).length;
-    const unionSetSize = makeUnionSet(multipleSet1, multipleSet2).length;
 
     if (unionSetSize === 0) return 65536;
 
