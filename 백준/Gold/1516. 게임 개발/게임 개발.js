@@ -5,14 +5,15 @@ const graph = Array.from({ length: Number(N) + 1 }, () => ({ time: 0, indegree: 
 const result = Array.from({ length: Number(N) + 1 }, () => 0);
 
 array.forEach((element, index) => {
-  const [time, ...pre] = element.split(" ").map(Number).slice(0, -1);
+  const to = index + 1;
+  const [time, ...fromNodes] = element.split(" ").map(Number).slice(0, -1);
 
-  graph[index + 1].time = time;
-  result[index + 1] = time;
+  graph[to].time = time;
+  result[to] = time; // 건물 짓는데 걸리는 시간을 자기 자신으로 초기화
 
-  pre.forEach((preElement) => {
-    graph[preElement].next.push(index + 1);
-    graph[index + 1].indegree++;
+  fromNodes.forEach((from) => {
+    graph[from].next.push(to);
+    graph[to].indegree++;
   });
 });
 
@@ -24,7 +25,7 @@ graph.forEach((node, index) => {
   if (node.indegree === 0) queue.push(index);
 });
 
-// 위상 정렬 실행
+// 진입 차수가 0일 때만 건물을 큐에 삽입
 while (queue.length > 0) {
   const currentNode = queue.shift();
 
