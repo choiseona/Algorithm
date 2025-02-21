@@ -12,21 +12,22 @@ function solution(friends, gifts) {
     friends.forEach((friend, index) => indexOfPerson[friend] = index)
 
     // 주고받은 선물 표
-    const giveAndTakeTable = Array.from(Array(friends.length), () => Array(friends.length).fill(0));
+    const giveAndTakeTable = Array.from({length:friends.length}, () => Array.from({length:friends.length}, () => 0))
     gifts.forEach((gift) => {
         const [sender, receiver] = gift.split(" ");
         giveAndTakeTable[indexOfPerson[sender]][indexOfPerson[receiver]]++;
     })
     
     // 주고받은 선물 지수 표
-    const giftIndex = Array.from(Array(friends.length).fill(0));
-    for(let i=0; i<friends.length; i++) {
-        const sendCount = giveAndTakeTable[i].reduce((cul,cur) => cul + cur, 0);
-        const receiveCount = giveAndTakeTable.reduce((acc, row) => acc + row[i], 0);
-        giftIndex[i] = sendCount - receiveCount;              
-    }
+    const giftIndex = Array.from({length:friends.length}, () => 0)
+    friends.forEach((_, index) => {
+        const sendCount =  giveAndTakeTable[index].reduce((cul,cur) => cul + cur, 0);
+        const receiveCount = giveAndTakeTable.reduce((acc, row) => acc + row[index], 0);
+        giftIndex[index] = sendCount - receiveCount;
+    })
     
-    const answer = Array.from(Array(friends.length).fill(0));
+    const answer = Array.from({length:friends.length},() => 0)
+    
     giveAndTakeTable.forEach((rowTable, rowIndex) => {
         rowTable.forEach((element, columnIndex) => {
             if(columnIndex <= rowIndex) return;
