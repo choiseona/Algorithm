@@ -1,6 +1,6 @@
 function solution(diffs, times, limit) {
     const binarySearch = (start,end, checkFind) => {
-        if(start > end) return start;
+        if(start >= end) return start;
         const middle = Math.floor((start + end)/2)
         if(checkFind(middle) === 1) return middle;
         else if(checkFind(middle) === -1) return binarySearch(middle+1, end, checkFind);
