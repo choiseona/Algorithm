@@ -1,58 +1,49 @@
 function solution(land) {
+    // 2:55 시작
+    // 3:48 시간초과 
+    
+    // 입력: land(석유 덩어리 2차원 정수배열)
+    // 출력: 가장 많은 석유 있는 column의 석유량 
+    
     const height = land.length;
     const width = land[0].length;
-    
-    const dir_x = [0, 0, -1, 1];
-    const dir_y = [-1, 1, 0, 0];
-    
-    const map = new Map();
 
-    // 너비 우선 탐색
-    // 시간 줄이기 위해 각 석유 덩어리에 해당하는 column 반환하기
-    const BFS = ([i, j], visited) => {
+    // 1. map 돌면서 2차원 column 배열 갱신 
+    const BFS = (startRow, startCol, visited) => {
+        const direction = [[0,-1], [0,1], [-1,0], [1,0]];
         const queue = [];
-        let count = 0;
-        const columnSet = new Set();
+        const dengAuRies = [];
+        queue.push([startRow, startCol]);
+        dengAuRies.push([startRow,startCol])
+        visited[startRow][startCol] = true;
         
-        queue.push([i, j]);
-        columnSet.add(j);
-        visited[i][j] = true; 
-        count++;
-        
-        while (queue.length !== 0) {
-            const [x, y] = queue.shift();
-            for (let k = 0; k < 4; k++) {
-                const newX = x + dir_x[k];
-                const newY = y + dir_y[k];
-                
-                if (newX < 0 || newY < 0 || newX >= height || newY >= width) continue;
-                if (visited[newX][newY] || !land[newX][newY]) continue;
-                
-                columnSet.add(newY);
-                visited[newX][newY] = true;
-                queue.push([newX, newY]);
-                count++;
+        while(queue.length > 0) {
+            const [row, col] = queue.shift();
+            for(const [dy,dx,count] of direction) {
+                const [newRow, newCol] = [row+dy, col+dx];
+                if(newRow < 0 || newCol < 0 || newRow >= height || newCol >= width) continue;
+                if(visited[newRow][newCol] || !land[newRow][newCol]) continue;
+                queue.push([newRow,newCol]);
+                dengAuRies.push([newRow,newCol])
+                visited[newRow][newCol] = true;
             }
         }
-        return [count, columnSet];
+        
+        return dengAuRies;
     }
     
-    // 시간 줄이기 위해 visit이 초기화되는 일 없도록하기
-    // visit 하나만 두되, 각 석유 덩어리에 해당하는 column에 대해 map으로 석유 count(key: column, value:count)
-    let maxCount = 0;
-    const visited = Array.from({ length: height }, () => Array(width).fill(false));
+    const visited = Array.from({length:height}, () => Array.from({length:width}), () => false)
+    const seokU = Array.from({length:width}, () => 0)
+    land.forEach((row, rowIndex) => {
+        row.forEach((el, columnIndex) => {
+            if(visited[rowIndex][columnIndex] || !land[rowIndex][columnIndex]) return;
+            const dengAuRies = BFS(rowIndex, columnIndex, visited)  
+            
+            const set = new Set();
+            dengAuRies.forEach(([row,col]) => set.add(col));
+            set.forEach((col) => seokU[col]+= dengAuRies.length)
+        })
+    })
     
-    for (let j = 0; j < width; j++) {
-        for (let i = 0; i < height; i++) {
-            if (land[i][j] && !visited[i][j]) {
-                const [queueCount, columnSet] = BFS([i,j], visited);
-                columnSet.forEach((column) => {
-                    map.set(column, (map.get(column) || 0) + queueCount)
-                })
-            }
-        }
-    }
-    
-    maxCount = Math.max(...map.values())
-    return maxCount;
+    return Math.max(...seokU)
 }
