@@ -1,4 +1,4 @@
-// 9:7 시작
+// 9:7 시작, 9:50 끝
 
 const fs = require("fs");
 const [meta, knows, ...parties] = fs.readFileSync(0).toString().trim().split("\n");
@@ -8,13 +8,11 @@ const [meta, knows, ...parties] = fs.readFileSync(0).toString().trim().split("\n
 // 출력: 들키지 않고 과장된 이야기를 할 수 있는 파티 개수 최대값
 
 //----------------------
-// 전체 파티 개수 - 아는 사람이 있는 파티 - 아는 사람의 파티에 참석한 사람이 있는 파티
 
 const [peopleCount, partyCount] = meta.split(" ").map(Number);
 const [count, ...knowArray] = knows.split(" ").map(Number);
 const partyArray = parties.map((friend) => friend.split(" ").map(Number));
 
-const visited = Array.from({ length: partyCount }, () => false);
 const isKnow = Array.from({ length: peopleCount + 1 }, () => false);
 knowArray.forEach((person) => (isKnow[person] = true));
 
@@ -23,15 +21,7 @@ while (true) {
   let changed = false;
 
   for (const [count, ...people] of partyArray) {
-    let hasKnow = false;
-
-    for (const person of people) {
-      if (isKnow[person]) {
-        hasKnow = true;
-        break;
-      }
-    }
-
+    let hasKnow = people.some((person) => isKnow[person]);
     if (!hasKnow) continue;
 
     for (const person of people) {
